@@ -8,9 +8,9 @@ import java.net.Socket;
 @Getter
 public class Connection {
 
-    private BufferedReader in = null;
-    private PrintWriter out = null;
-    private BufferedOutputStream dataOut = null;
+    private BufferedReader in;
+    private PrintWriter out;
+    private BufferedOutputStream dataOut;
 
     public Connection(Socket socket) throws IOException {
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

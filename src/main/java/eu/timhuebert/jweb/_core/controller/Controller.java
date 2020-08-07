@@ -23,7 +23,6 @@ public class Controller implements ControllerInterface {
             if(!route.method().equals(request.getMethod())) continue;
 
             return (Response) method.invoke(this, request);
-
         }
 
         return null;
