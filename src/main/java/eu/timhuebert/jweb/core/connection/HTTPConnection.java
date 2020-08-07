@@ -1,10 +1,13 @@
-package eu.timhuebert.jweb.connection;
+package eu.timhuebert.jweb.core.connection;
 
-import eu.timhuebert.jweb.JWeb;
-import eu.timhuebert.jweb.request.Request;
+import eu.timhuebert.jweb.core.JWeb;
+import eu.timhuebert.jweb.core.exception.InternalServerErrorException;
+import eu.timhuebert.jweb.core.request.Request;
+import eu.timhuebert.jweb.core.response.Response;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 public class HTTPConnection implements Runnable {
@@ -33,6 +36,18 @@ public class HTTPConnection implements Runnable {
 
             jWeb.getRequestHandler().handle(this, request);
         } catch (Exception exception) {
+            if (exception instanceof InternalServerErrorException) {
+                Response.StatusCode statusCode = Response.StatusCode.METHOD_NOT_ALLOWED;
+                Response response = new Response(
+                        statusCode,
+                        statusCode.getStatusCode() + " " + statusCode.getMessage());
+                PrintWriter out = connection.getOut();
+                response.print(out);
+                out.flush();
+                // TODO message
+                return;
+            }
+
             exception.printStackTrace();
         } finally {
             try {

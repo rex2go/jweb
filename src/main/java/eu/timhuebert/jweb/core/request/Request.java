@@ -1,6 +1,8 @@
-package eu.timhuebert.jweb.request;
+package eu.timhuebert.jweb.core.request;
 
 import lombok.Data;
+
+import java.util.HashMap;
 
 @Data
 public class Request {
@@ -8,6 +10,8 @@ public class Request {
     private Method method;
     private String route;
     private String version;
+
+    private HashMap<String, String> parameters = new HashMap<String, String>();
 
     public Request(Method method, String route, String version) {
         this.method = method;

@@ -1,7 +1,7 @@
-package eu.timhuebert.jweb.controller;
+package eu.timhuebert.jweb.core.controller;
 
-import eu.timhuebert.jweb.request.Request;
-import eu.timhuebert.jweb.response.Response;
+import eu.timhuebert.jweb.core.request.Request;
+import eu.timhuebert.jweb.core.response.Response;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

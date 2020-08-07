@@ -1,9 +1,10 @@
-package eu.timhuebert.jweb.request;
+package eu.timhuebert.jweb.core.request;
 
-import eu.timhuebert.jweb.JWeb;
-import eu.timhuebert.jweb.connection.HTTPConnection;
-import eu.timhuebert.jweb.controller.Controller;
-import eu.timhuebert.jweb.response.Response;
+import eu.timhuebert.jweb.core.JWeb;
+import eu.timhuebert.jweb.core.connection.HTTPConnection;
+import eu.timhuebert.jweb.core.controller.Controller;
+import eu.timhuebert.jweb.core.exception.InternalServerErrorException;
+import eu.timhuebert.jweb.core.response.Response;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -78,12 +79,17 @@ public class RequestHandler {
         return true;
     }
 
-    public Request buildRequest(String str) {
+    public Request buildRequest(String str) throws InternalServerErrorException {
+        if(str == null) throw new InternalServerErrorException();
+
         StringTokenizer parse = new StringTokenizer(str);
         String methodStr = parse.nextToken().toUpperCase().toUpperCase();
-        String route = parse.nextToken().toLowerCase();
+        String route = parse.nextToken();
         String version = parse.nextToken().toLowerCase().toUpperCase();
         Request.Method method;
+
+        String[] routeParts = route.split("\\?");
+        route = routeParts[0].toLowerCase();
 
         try {
             method = Request.Method.valueOf(methodStr);
@@ -91,6 +97,20 @@ public class RequestHandler {
             method = Request.Method.UNKNOWN;
         }
 
-        return new Request(method, route, version);
+        Request request = new Request(method, route, version);
+
+        for(String parameters : routeParts[1].split("&")) {
+            String[] parameterParts = parameters.split("=");
+            String key = parameterParts[0];
+            String value = "";
+
+            if(parameterParts.length > 1) {
+                value = parameterParts[1];
+            }
+
+            request.getParameters().put(key, value);
+        }
+
+        return request;
     }
 }

@@ -1,6 +1,6 @@
-package eu.timhuebert.jweb.container;
+package eu.timhuebert.jweb.core.container;
 
-import eu.timhuebert.jweb.controller.Controller;
+import eu.timhuebert.jweb.core.controller.Controller;
 import lombok.Getter;
 import org.reflections.Reflections;
 
@@ -13,13 +13,14 @@ public class ControllerContainer {
     private ArrayList<Controller> container = new ArrayList<Controller>();
 
     public ControllerContainer() {
-        Reflections reflections = new Reflections("eu.timhuebert.jweb.controller.controller");
+        Reflections reflections = new Reflections("eu.timhuebert.jweb.controller");
 
         Set<Class<? extends Controller>> allClasses = reflections.getSubTypesOf(Controller.class);
 
-        cl: for(Class clazz : allClasses) {
-            for(Controller controller : container) {
-                if(controller.getClass().getName().equals(clazz.getName())) continue cl;
+        cl:
+        for (Class clazz : allClasses) {
+            for (Controller controller : container) {
+                if (controller.getClass().getName().equals(clazz.getName())) continue cl;
             }
 
             try {

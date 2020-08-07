@@ -1,14 +1,21 @@
-package eu.timhuebert.jweb.response;
+package eu.timhuebert.jweb.core.response;
 
-import eu.timhuebert.jweb.connection.HTTPConnection;
+import eu.timhuebert.jweb.core.connection.HTTPConnection;
 import lombok.Data;
 import lombok.Getter;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
 public class Response {
+
+    public static HashMap<String, String> DEFAULT_HEADERS = new HashMap<String, String>();
+
+    static {
+        DEFAULT_HEADERS.put("content-type", "text/html;");
+    }
 
     private StatusCode statusCode;
 
@@ -22,9 +29,15 @@ public class Response {
         this.body = body;
     }
 
+    public Response(StatusCode statusCode, String body) {
+        this(statusCode, DEFAULT_HEADERS, body);
+    }
+
     public boolean print(PrintWriter out) {
         out.println(HTTPConnection.getVersion() + " " + statusCode.getStatusCode() + " " + statusCode.getMessage());
-        // TODO headers
+
+        for (Map.Entry<String, String> entry : getHeaders().entrySet())
+            out.println(entry.getKey() + ": " + entry.getValue());
 
         out.println();
 
