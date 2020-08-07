@@ -1,13 +1,12 @@
-package eu.timhuebert.jweb.core.request;
+package eu.timhuebert.jweb._core.request;
 
-import eu.timhuebert.jweb.core.JWeb;
-import eu.timhuebert.jweb.core.connection.HTTPConnection;
-import eu.timhuebert.jweb.core.controller.Controller;
-import eu.timhuebert.jweb.core.exception.InternalServerErrorException;
-import eu.timhuebert.jweb.core.response.Response;
+import eu.timhuebert.jweb._core.JWeb;
+import eu.timhuebert.jweb._core.connection.HTTPConnection;
+import eu.timhuebert.jweb._core.controller.ControllerInterface;
+import eu.timhuebert.jweb._core.exception.InternalServerErrorException;
+import eu.timhuebert.jweb._core.response.Response;
 
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class RequestHandler {
@@ -24,7 +23,7 @@ public class RequestHandler {
         // TODO middleware
 
         Response response = null;
-        for (Controller controller : jWeb.getControllerContainer().getContainer()) {
+        for (ControllerInterface controller : jWeb.getControllerContainer().getContainer()) {
             try {
                 Response tempResponse = controller.call(request);
 
@@ -38,7 +37,6 @@ public class RequestHandler {
             Response.StatusCode statusCode = Response.StatusCode.NOT_FOUND;
             response = new Response(
                     statusCode,
-                    new HashMap<String, String>(),
                     statusCode.getStatusCode() + " " + statusCode.getMessage()
             );
         }
@@ -57,14 +55,12 @@ public class RequestHandler {
             Response.StatusCode statusCode = Response.StatusCode.HTTP_VERSION_NOT_SUPPORTED;
             errorResponse = new Response(
                     statusCode,
-                    new HashMap<String, String>(),
                     statusCode.getStatusCode() + " " + statusCode.getMessage()
             );
         } else if (request.getMethod() == Request.Method.UNKNOWN) {
             Response.StatusCode statusCode = Response.StatusCode.METHOD_NOT_ALLOWED;
             errorResponse = new Response(
                     statusCode,
-                    new HashMap<String, String>(),
                     statusCode.getStatusCode() + " " + statusCode.getMessage()
             );
         }
@@ -80,7 +76,7 @@ public class RequestHandler {
     }
 
     public Request buildRequest(String str) throws InternalServerErrorException {
-        if(str == null) throw new InternalServerErrorException();
+        if (str == null) throw new InternalServerErrorException();
 
         StringTokenizer parse = new StringTokenizer(str);
         String methodStr = parse.nextToken().toUpperCase().toUpperCase();
@@ -99,16 +95,18 @@ public class RequestHandler {
 
         Request request = new Request(method, route, version);
 
-        for(String parameters : routeParts[1].split("&")) {
-            String[] parameterParts = parameters.split("=");
-            String key = parameterParts[0];
-            String value = "";
+        if (routeParts.length > 1) {
+            for (String parameters : routeParts[1].split("&")) {
+                String[] parameterParts = parameters.split("=");
+                String key = parameterParts[0];
+                String value = "";
 
-            if(parameterParts.length > 1) {
-                value = parameterParts[1];
+                if (parameterParts.length > 1) {
+                    value = parameterParts[1];
+                }
+
+                request.getParameters().put(key, value);
             }
-
-            request.getParameters().put(key, value);
         }
 
         return request;

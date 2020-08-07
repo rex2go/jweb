@@ -1,6 +1,6 @@
-package eu.timhuebert.jweb.core.response;
+package eu.timhuebert.jweb._core.response;
 
-import eu.timhuebert.jweb.core.connection.HTTPConnection;
+import eu.timhuebert.jweb._core.connection.HTTPConnection;
 import lombok.Data;
 import lombok.Getter;
 
@@ -12,10 +12,6 @@ import java.util.Map;
 public class Response {
 
     public static HashMap<String, String> DEFAULT_HEADERS = new HashMap<String, String>();
-
-    static {
-        DEFAULT_HEADERS.put("content-type", "text/html;");
-    }
 
     private StatusCode statusCode;
 

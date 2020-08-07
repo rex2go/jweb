@@ -1,9 +1,9 @@
-package eu.timhuebert.jweb.core.connection;
+package eu.timhuebert.jweb._core.connection;
 
-import eu.timhuebert.jweb.core.JWeb;
-import eu.timhuebert.jweb.core.exception.InternalServerErrorException;
-import eu.timhuebert.jweb.core.request.Request;
-import eu.timhuebert.jweb.core.response.Response;
+import eu.timhuebert.jweb._core.JWeb;
+import eu.timhuebert.jweb._core.exception.InternalServerErrorException;
+import eu.timhuebert.jweb._core.request.Request;
+import eu.timhuebert.jweb._core.response.Response;
 import lombok.Getter;
 
 import java.io.IOException;

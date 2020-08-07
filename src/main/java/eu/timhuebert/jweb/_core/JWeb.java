@@ -1,8 +1,8 @@
-package eu.timhuebert.jweb.core;
+package eu.timhuebert.jweb._core;
 
-import eu.timhuebert.jweb.core.connection.HTTPConnection;
-import eu.timhuebert.jweb.core.container.ControllerContainer;
-import eu.timhuebert.jweb.core.request.RequestHandler;
+import eu.timhuebert.jweb._core.connection.HTTPConnection;
+import eu.timhuebert.jweb._core.container.ControllerContainer;
+import eu.timhuebert.jweb._core.request.RequestHandler;
 import lombok.Getter;
 
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package eu.timhuebert.jweb.controller;
 
-import eu.timhuebert.jweb.core.controller.Controller;
-import eu.timhuebert.jweb.core.request.Request;
-import eu.timhuebert.jweb.core.response.Response;
+import eu.timhuebert.jweb._core.controller.Controller;
+import eu.timhuebert.jweb._core.request.Request;
+import eu.timhuebert.jweb._core.response.Response;
 
 public class HelloController extends Controller {
 

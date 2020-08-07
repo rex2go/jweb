@@ -1,4 +1,4 @@
-package eu.timhuebert.jweb.core.connection;
+package eu.timhuebert.jweb._core.connection;
 
 import lombok.Getter;
 

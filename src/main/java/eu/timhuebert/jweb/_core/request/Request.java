@@ -1,4 +1,4 @@
-package eu.timhuebert.jweb.core.request;
+package eu.timhuebert.jweb._core.request;
 
 import lombok.Data;
 
