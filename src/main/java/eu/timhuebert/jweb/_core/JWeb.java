@@ -10,16 +10,7 @@ import java.net.ServerSocket;
 
 public class JWeb {
 
-    private static boolean exit = false;
-
-    public static void main(String[] args) {
-        JWeb jWeb = new JWeb();
-        jWeb.start();
-    }
-
-    public static void exit() {
-        exit = true;
-    }
+    private boolean exit = false;
 
     @Getter
     private ControllerContainer controllerContainer;
@@ -27,7 +18,7 @@ public class JWeb {
     @Getter
     private RequestHandler requestHandler;
 
-    private JWeb() {
+    public JWeb() {
         init();
     }
 
@@ -37,18 +28,23 @@ public class JWeb {
         requestHandler = new RequestHandler(this);
     }
 
-    private void start() {
+    public void start() {
         try {
             ServerSocket serverSocket = new ServerSocket(2020);
 
             while (!exit) {
                 HTTPConnection connection = new HTTPConnection(this, serverSocket.accept());
-
-                new Thread(connection).start();
+                Thread thread = new Thread(connection);
+                
+                thread.start();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop() {
+        exit = true;
     }
 }

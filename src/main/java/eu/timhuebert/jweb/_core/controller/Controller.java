@@ -19,8 +19,8 @@ public class Controller implements ControllerInterface {
             if (!method.isAnnotationPresent(Route.class)) continue;
             Route route = method.getAnnotation(Route.class);
 
-            if(!route.route().equals(request.getRoute())) continue;
-            if(!route.method().equals(request.getMethod())) continue;
+            if (!route.route().equals(request.getRoute())) continue;
+            if (!route.method().equals(request.getMethod())) continue;
 
             return (Response) method.invoke(this, request);
         }
