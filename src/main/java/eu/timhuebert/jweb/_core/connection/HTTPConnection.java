@@ -6,9 +6,7 @@ import eu.timhuebert.jweb._core.request.Request;
 import eu.timhuebert.jweb._core.response.Response;
 import lombok.Getter;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class HTTPConnection implements Runnable {
@@ -32,7 +30,7 @@ public class HTTPConnection implements Runnable {
         try {
             connection = new Connection(socket);
 
-            String input = connection.getIn().readLine();
+            BufferedReader input = connection.getIn();
             Request request = jWeb.getRequestHandler().buildRequest(input);
 
             jWeb.getRequestHandler().handle(this, request);

@@ -7,8 +7,10 @@ import eu.timhuebert.jweb._core.exception.InternalServerErrorException;
 import eu.timhuebert.jweb._core.response.Response;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class RequestHandler {
@@ -32,7 +34,7 @@ public class RequestHandler {
         if (response == null) {
             response = JWeb.getInstance().getResourceManager().load(request.getRoute().substring(1));
 
-            if(response == null) {
+            if (response == null) {
                 Response.StatusCode statusCode = Response.StatusCode.NOT_FOUND;
                 response = new Response(
                         statusCode,
@@ -92,40 +94,63 @@ public class RequestHandler {
         return true;
     }
 
-    public Request buildRequest(String str) throws InternalServerErrorException {
-        if (str == null) throw new InternalServerErrorException();
-
-        StringTokenizer parse = new StringTokenizer(str);
-        String methodStr = parse.nextToken().toUpperCase().toUpperCase();
-        String route = parse.nextToken();
-        String version = parse.nextToken().toLowerCase().toUpperCase();
-        Request.Method method;
-
-        String[] routeParts = route.split("\\?");
-        route = routeParts[0].toLowerCase();
+    public Request buildRequest(BufferedReader inputStream) throws InternalServerErrorException {
+        if (inputStream == null) throw new InternalServerErrorException();
 
         try {
-            method = Request.Method.valueOf(methodStr);
-        } catch (Exception exception) {
-            method = Request.Method.UNKNOWN;
-        }
+            String str = inputStream.readLine();
+            StringTokenizer parse = new StringTokenizer(str);
+            String methodStr = parse.nextToken().toUpperCase().toUpperCase();
+            String route = parse.nextToken();
+            String version = parse.nextToken().toLowerCase().toUpperCase();
+            Request.Method method;
 
-        Request request = new Request(method, route, version);
+            String[] routeParts = route.split("\\?");
+            route = routeParts[0].toLowerCase();
 
-        if (routeParts.length > 1) {
-            for (String parameters : routeParts[1].split("&")) {
-                String[] parameterParts = parameters.split("=");
-                String key = parameterParts[0];
-                String value = "";
+            try {
+                method = Request.Method.valueOf(methodStr);
+            } catch (Exception exception) {
+                method = Request.Method.UNKNOWN;
+            }
 
-                if (parameterParts.length > 1) {
-                    value = parameterParts[1];
+            Request request = new Request(method, route, version);
+            boolean body = false;
+            HashMap<String, String> headers = new HashMap<String, String>();
+
+            while(inputStream.ready()) {
+                str = inputStream.readLine();
+
+                if(str.isEmpty()) {
+                    body = true;
+                    continue;
                 }
 
-                request.getParameters().put(key, value);
+                if(!body) {
+                    System.out.println("header " + str);
+                } else {
+                    System.out.println("body " + str);
+                }
             }
-        }
 
-        return request;
+            if (routeParts.length > 1) {
+                for (String parameters : routeParts[1].split("&")) {
+                    String[] parameterParts = parameters.split("=");
+                    String key = parameterParts[0];
+                    String value = "";
+
+                    if (parameterParts.length > 1) {
+                        value = parameterParts[1];
+                    }
+
+                    request.getParameters().put(key, value);
+                }
+            }
+
+            return request;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InternalServerErrorException();
+        }
     }
 }
