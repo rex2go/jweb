@@ -6,16 +6,12 @@ import eu.timhuebert.jweb._core.controller.ControllerInterface;
 import eu.timhuebert.jweb._core.exception.InternalServerErrorException;
 import eu.timhuebert.jweb._core.response.Response;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 public class RequestHandler {
-
-    private JWeb jWeb;
-
-    public RequestHandler(JWeb jWeb) {
-        this.jWeb = jWeb;
-    }
 
     public boolean handle(HTTPConnection httpConnection, Request request) {
         if (!validate(httpConnection, request)) return false;
@@ -23,7 +19,7 @@ public class RequestHandler {
         // TODO middleware
 
         Response response = null;
-        for (ControllerInterface controller : jWeb.getControllerContainer().getContainer()) {
+        for (ControllerInterface controller : JWeb.getInstance().getControllerContainer().getContainer()) {
             try {
                 Response tempResponse = controller.call(request);
 
@@ -34,16 +30,28 @@ public class RequestHandler {
         }
 
         if (response == null) {
-            Response.StatusCode statusCode = Response.StatusCode.NOT_FOUND;
-            response = new Response(
-                    statusCode,
-                    statusCode.getStatusCode() + " " + statusCode.getMessage()
-            );
+            response = JWeb.getInstance().getResourceManager().load(request.getRoute().substring(1));
+
+            if(response == null) {
+                Response.StatusCode statusCode = Response.StatusCode.NOT_FOUND;
+                response = new Response(
+                        statusCode,
+                        statusCode.getStatusCode() + " " + statusCode.getMessage()
+                );
+            }
         }
 
         PrintWriter out = httpConnection.getConnection().getOut();
-        response.print(out);
+        BufferedOutputStream dataOut = httpConnection.getConnection().getDataOut();
+
+        response.print(out, dataOut);
         out.flush();
+
+        try {
+            dataOut.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return true;
     }
@@ -67,8 +75,17 @@ public class RequestHandler {
 
         if (errorResponse != null) {
             PrintWriter out = httpConnection.getConnection().getOut();
-            errorResponse.print(out);
+            BufferedOutputStream dataOut = httpConnection.getConnection().getDataOut();
+
+            errorResponse.print(out, dataOut);
             out.flush();
+
+            try {
+                dataOut.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return false;
         }
 

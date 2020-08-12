@@ -1,4 +1,4 @@
-package eu.timhuebert.jweb._core.container;
+package eu.timhuebert.jweb._core.controller;
 
 import eu.timhuebert.jweb._core.controller.ControllerInterface;
 import lombok.Getter;

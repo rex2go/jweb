@@ -6,6 +6,7 @@ import eu.timhuebert.jweb._core.request.Request;
 import eu.timhuebert.jweb._core.response.Response;
 import lombok.Getter;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -41,9 +42,19 @@ public class HTTPConnection implements Runnable {
                 Response response = new Response(
                         statusCode,
                         statusCode.getStatusCode() + " " + statusCode.getMessage());
+
                 PrintWriter out = connection.getOut();
-                response.print(out);
+                BufferedOutputStream dataOut = connection.getDataOut();
+
+                response.print(out, dataOut);
                 out.flush();
+
+                try {
+                    dataOut.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 // TODO message
                 return;
             }

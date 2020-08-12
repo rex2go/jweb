@@ -4,6 +4,8 @@ import eu.timhuebert.jweb._core.connection.HTTPConnection;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,19 +19,27 @@ public class Response {
 
     private Map<String, String> headers;
 
-    private String body; // TODO
+    private byte[] body; // TODO
 
-    public Response(StatusCode statusCode, Map<String, String> headers, String body) {
+    public Response(StatusCode statusCode, Map<String, String> headers, byte[] body) {
         this.statusCode = statusCode;
         this.headers = headers;
         this.body = body;
     }
 
+    public Response(StatusCode statusCode, Map<String, String> headers, String body) {
+        this(statusCode, headers, body.getBytes());
+    }
+
     public Response(StatusCode statusCode, String body) {
+        this(statusCode, body.getBytes());
+    }
+
+    public Response(StatusCode statusCode, byte[] body) {
         this(statusCode, DEFAULT_HEADERS, body);
     }
 
-    public boolean print(PrintWriter out) {
+    public boolean print(PrintWriter out, BufferedOutputStream dataOut) {
         out.println(HTTPConnection.getVersion() + " " + statusCode.getStatusCode() + " " + statusCode.getMessage());
 
         for (Map.Entry<String, String> entry : getHeaders().entrySet())
@@ -37,7 +47,11 @@ public class Response {
 
         out.println();
 
-        out.println(body);
+        try {
+            dataOut.write(body);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
